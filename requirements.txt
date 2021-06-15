@@ -1,0 +1,5 @@
+numpy==1.19.5
+tensorflow==2.5.0
+tensorflow_addons==0.13.0
+opencv_python==4.1.2.30
+scikit_learn==0.24.2
