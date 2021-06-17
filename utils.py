@@ -49,14 +49,15 @@ class CustomCallback(tf.keras.callbacks.Callback):
     the confusion matrix and classification report on the validation data.
     """
 
-    def __init__(self, val_gen, model_path):
+    def __init__(self, val_gen, model_path, model_id):
         
         super(CustomCallback, self).__init__()
         self.val_gen = val_gen
         self.model_path = model_path
+        self.model_id = model_id
         
     def on_epoch_end(self, epoch, logs=None):
-        model.save(model.path + 'epoch{}'.format(epoch))
+        model.save(model.path + 'epoch{}-id{}'.format(epoch,self.model_id ))
         y_pred = self.model.predict(self.val_gen)
         y_pred = np.squeeze(np.argmax(y_pred, axis = 1))
         y_true = self.val_gen.classes
