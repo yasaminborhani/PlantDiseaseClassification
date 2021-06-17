@@ -48,7 +48,7 @@ class PatchEncoder(layers.Layer):
         encoded = self.projection(patch) + self.position_embedding(positions)
         return encoded
 
-def create_vit_classifier(input_shape, patch_size, projection_dim, transformer_units, transformer_layers, model_name):
+def create_vit_classifier(input_shape, patch_size, num_patches, projection_dim, transformer_units, transformer_layers, model_name, num_heads, mlp_head_units, num_classes):
     inputs = layers.Input(shape=input_shape)
     # Create patches.
     patches = Patches(patch_size)(inputs)
@@ -84,7 +84,7 @@ def create_vit_classifier(input_shape, patch_size, projection_dim, transformer_u
     model = keras.Model(inputs=inputs, outputs=logits, name = model_name)
     return model
 
-def model_maker(target_size, model_id):
+def model_maker(target_size, model_id, num_classes = 3):
     """ This function creates a trainable model. 
         params:
             target_size: tuple, size of the input image to the network
@@ -106,7 +106,7 @@ def model_maker(target_size, model_id):
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
         FC2 = Dense(50, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
-        output = Dense(3, activation = 'softmax', name = 'output_layer')(FC2)
+        output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
         model.summary()
     
@@ -126,7 +126,7 @@ def model_maker(target_size, model_id):
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
         FC2 = Dense(50, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
-        output = Dense(3, activation = 'softmax', name = 'output_layer')(FC2)
+        output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
         model.summary()
 
@@ -141,11 +141,14 @@ def model_maker(target_size, model_id):
             projection_dim]  # Size of the transformer layers
         transformer_layers = 2
         mlp_head_units = [50, 50]
-        model = create_vit_classifier(input_shape = (*target_size, 3),
+        model = create_vit_classifier((*target_size, 3),
                                       patch_size,
+                                      num_patches,
                                       projection_dim,
                                       transformer_units,
-                                      transformer_layers, 'WheatClassifier_VIT_'+str(model_id))
+                                      transformer_layers, 
+                                      'WheatClassifier_VIT_'+str(model_id),
+                                      num_heads, mlp_head_units, num_classes)
         model.summary()
         
     elif model_id == 4:
@@ -159,11 +162,14 @@ def model_maker(target_size, model_id):
             projection_dim]  # Size of the transformer layers
         transformer_layers = 4
         mlp_head_units = [50, 50]
-        model = create_vit_classifier(input_shape = (*target_size, 3),
+        model = create_vit_classifier((*target_size, 3),
                                       patch_size,
+                                      num_patches,
                                       projection_dim,
                                       transformer_units,
-                                      transformer_layers, 'WheatClassifier_VIT_'+str(model_id))
+                                      transformer_layers,
+                                      'WheatClassifier_VIT_'+str(model_id),
+                                      num_heads, mlp_head_units, num_classes)
 
         model.summary()
 

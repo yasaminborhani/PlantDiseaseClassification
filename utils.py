@@ -42,6 +42,7 @@ def gen_maker(train_path, val_path, target_size=(100, 100), batch_size=16, mode=
         batch_size=batch_size,
         shuffle=False,
         class_mode=mode)
+    return train_generator, validation_generator
 
 class CustomCallback(tf.keras.callbacks.Callback):
     """
@@ -57,7 +58,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
         self.model_id = model_id
         
     def on_epoch_end(self, epoch, logs=None):
-        model.save(model.path + 'epoch{}-id{}'.format(epoch,self.model_id ))
+        self.model.save(self.model_path + 'epoch{}-id{}'.format(epoch,self.model_id ))
         y_pred = self.model.predict(self.val_gen)
         y_pred = np.squeeze(np.argmax(y_pred, axis = 1))
         y_true = self.val_gen.classes
