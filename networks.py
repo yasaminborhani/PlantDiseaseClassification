@@ -262,17 +262,17 @@ def model_maker(target_size, model_id, num_classes = 3):
           # Skip connection 2.
           encoded_patches = layers.Add()([x3, x2])
 
-        # Create a [batch_size, projection_dim] tensor.
-        representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
+      # Create a [batch_size, projection_dim] tensor.
+      representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
 
-        fltn = Flatten(name = 'flatten_layer')(representation)
-        FC1 = Dense(50, name = 'FC_1')(fltn)
-        FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
-        FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
-        output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
-        model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
-        model.summary()
+      fltn = Flatten(name = 'flatten_layer')(representation)
+      FC1 = Dense(50, name = 'FC_1')(fltn)
+      FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
+      FC2 = Dense(50, name = 'FC_2')(FC1)
+      FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
+      output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
+      model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
+      model.summary()
         
 
 
