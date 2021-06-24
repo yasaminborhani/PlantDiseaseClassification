@@ -276,115 +276,142 @@ def model_maker(target_size, model_id, num_classes = 3):
         model.summary()
 
     elif model_id == 7:
-      image_size = target_size[0]  # We'll resize input images to this size
-      patch_size = 10  # Size of the patches to be extract from the input images
-      num_patches = (image_size // patch_size) ** 2
-      projection_dim = 64
-      num_heads = 4
-      transformer_units = [
+        image_size = target_size[0]  # We'll resize input images to this size
+        patch_size = 10  # Size of the patches to be extract from the input images
+        num_patches = (image_size // patch_size) ** 2
+        projection_dim = 64
+        num_heads = 4
+        transformer_units = [
           projection_dim * 2,
           projection_dim]  # Size of the transformer layers
-      transformer_layers = 1
-      mlp_head_units = [50, 50]
-      inputs = layers.Input(shape=input_shape)
+        transformer_layers = 1
+        mlp_head_units = [50, 50]
+        inputs = layers.Input(shape = (*target_size, 3), name = 'input_layer')
       # Create patches.
-      patches = Patches(patch_size)(inputs)
+        patches = Patches(patch_size)(inputs)
 
       # Encode patches.
-      encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
+        encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
 
       # Create multiple layers of the Transformer block.
-      for _ in range(transformer_layers):
+        for _ in range(transformer_layers):
           # Layer normalization 1.
-          x1 = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
+            x1 = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
           # Create a multi-head attention layer.
-          attention_output = layers.MultiHeadAttention(
+            attention_output = layers.MultiHeadAttention(
               num_heads=num_heads, key_dim=projection_dim, dropout=0.1
           )(x1, x1)
           # Skip connection 1.
-          x2 = layers.Add()([attention_output, encoded_patches])
+            x2 = layers.Add()([attention_output, encoded_patches])
           # Layer normalization 2.
-          x3 = layers.LayerNormalization(epsilon=1e-6)(x2)
+            x3 = layers.LayerNormalization(epsilon=1e-6)(x2)
           # MLP.
-          x3 = mlp(x3, hidden_units=transformer_units, dropout_rate=0.1)
+            x3 = mlp(x3, hidden_units=transformer_units, dropout_rate=0.1)
           # Skip connection 2.
-          encoded_patches = layers.Add()([x3, x2])
+            encoded_patches = layers.Add()([x3, x2])
 
       # Create a [batch_size, projection_dim] tensor.
-      representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
-      size_rep = getattr(representation, 'shape')
+        representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
+        size_rep = getattr(representation, 'shape')
 
-      representation = tf.keras.layers.Reshape((int(size_rep[1]**0.5), int(size_rep[1]**0.5), size_rep[2]))(representation)
-      cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1')(representation)
-      cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2')(cnv1)
-      mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+        representation = tf.keras.layers.Reshape((int(size_rep[1]**0.5), int(size_rep[1]**0.5), size_rep[2]))(representation)
+        cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1')(representation)
+        cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2')(cnv1)
+        if int(size_rep[1]**0.5)>5:
+            mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
 
-      fltn = Flatten(name = 'flatten_layer')(mxp1)
-      FC1 = Dense(50, name = 'FC_1')(fltn)
-      FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-      FC2 = Dense(50, name = 'FC_2')(FC1)
-      FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
-      output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
-      model = Model(inputs = inputs, outputs = output, name = 'WheatClassifier_CNN_'+str(1))
-      model.summary()
+            fltn = Flatten(name = 'flatten_layer')(mxp1)
+        else:
+            fltn = Flatten(name = 'flatten_layer')(cnv2)
+        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
+        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
+        output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
+        model = Model(inputs = inputs, outputs = output, name = 'WheatClassifier_CNN_'+str(1))
+        model.summary()
 
     elif model_id == 8:
-      image_size = target_size[0]  # We'll resize input images to this size
-      patch_size = 10  # Size of the patches to be extract from the input images
-      num_patches = (image_size // patch_size) ** 2
-      projection_dim = 64
-      num_heads = 4
-      transformer_units = [
+        image_size = target_size[0]  # We'll resize input images to this size
+        patch_size = 10  # Size of the patches to be extract from the input images
+        num_patches = (image_size // patch_size) ** 2
+        projection_dim = 64
+        num_heads = 4
+        transformer_units = [
           projection_dim * 2,
           projection_dim]  # Size of the transformer layers
-      transformer_layers = 2
-      mlp_head_units = [50, 50]
-      inputs = layers.Input(shape=input_shape)
+        transformer_layers = 2
+        mlp_head_units = [50, 50]
+        inputs = layers.Input(shape = (*target_size, 3), name = 'input_layer')
       # Create patches.
-      patches = Patches(patch_size)(inputs)
+        patches = Patches(patch_size)(inputs)
 
       # Encode patches.
-      encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
+        encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
 
       # Create multiple layers of the Transformer block.
-      for _ in range(transformer_layers):
+        for _ in range(transformer_layers):
           # Layer normalization 1.
-          x1 = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
+            x1 = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
           # Create a multi-head attention layer.
-          attention_output = layers.MultiHeadAttention(
+            attention_output = layers.MultiHeadAttention(
               num_heads=num_heads, key_dim=projection_dim, dropout=0.1
-          )(x1, x1)
+            )(x1, x1)
           # Skip connection 1.
-          x2 = layers.Add()([attention_output, encoded_patches])
+            x2 = layers.Add()([attention_output, encoded_patches])
           # Layer normalization 2.
-          x3 = layers.LayerNormalization(epsilon=1e-6)(x2)
+            x3 = layers.LayerNormalization(epsilon=1e-6)(x2)
           # MLP.
-          x3 = mlp(x3, hidden_units=transformer_units, dropout_rate=0.1)
+            x3 = mlp(x3, hidden_units=transformer_units, dropout_rate=0.1)
           # Skip connection 2.
-          encoded_patches = layers.Add()([x3, x2])
+            encoded_patches = layers.Add()([x3, x2])
 
       # Create a [batch_size, projection_dim] tensor.
-      representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
-      size_rep = getattr(representation, 'shape')
+        representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
+        size_rep = getattr(representation, 'shape')
 
-      representation = tf.keras.layers.Reshape((int(size_rep[1]**0.5), int(size_rep[1]**0.5), size_rep[2]))(representation)
-      cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1')(representation)
-      cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2')(cnv1)
-      mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+        representation = tf.keras.layers.Reshape((int(size_rep[1]**0.5), int(size_rep[1]**0.5), size_rep[2]))(representation)
+        if int(size_rep[1]**0.5)==5:
+            cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1', padding = 'same')(representation)
+            cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2', padding = 'same')(cnv1)
+            #mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
 
-      cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3')(mxp1)
-      cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4')(cnv3)
-      mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
+            cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3', padding = 'valid')(cnv2)
+            cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4', padding = 'valid')(cnv3)
+            #mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
               
 
-      fltn = Flatten(name = 'flatten_layer')(mxp2)
-      FC1 = Dense(50, name = 'FC_1')(fltn)
-      FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-      FC2 = Dense(50, name = 'FC_2')(FC1)
-      FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
-      output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
-      model = Model(inputs = inputs, outputs = output, name = 'WheatClassifier_CNN_'+str(1))
-      model.summary()
+            fltn = Flatten(name = 'flatten_layer')(cnv4)
+        elif int(size_rep[1]**0.5)==10:
+            cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1', padding = 'valid')(representation)
+            cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2', padding = 'valid')(cnv1)
+            #mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+
+            cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3', padding = 'valid')(cnv2)
+            cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4', padding = 'valid')(cnv3)
+            #mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
+              
+
+            fltn = Flatten(name = 'flatten_layer')(cnv4)
+        else:
+            cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1', padding = 'valid')(representation)
+            cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2', padding = 'valid')(cnv1)
+            mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+
+            cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3', padding = 'valid')(mxp1)
+            cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4', padding = 'valid')(cnv3)
+            mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
+              
+
+            fltn = Flatten(name = 'flatten_layer')(mxp2)
+
+        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
+        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
+        output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
+        model = Model(inputs = inputs, outputs = output, name = 'WheatClassifier_CNN_'+str(1))
+        model.summary()
         
 
 
