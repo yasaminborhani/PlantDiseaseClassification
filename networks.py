@@ -124,8 +124,11 @@ def model_maker(target_size, model_id, num_classes = 3):
         lkr2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(mxp2)
         cnv5 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_5')(lkr2)
         cnv6 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_6')(cnv5)
-        mxp3 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_3')(cnv6)
-        lkr3 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk3')(mxp3)
+        if target_size[0]>50:
+            mxp3 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_3')(cnv6)
+            lkr3 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk3')(mxp3)
+        else:
+            lkr3 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk3')(cnv6)
         cnv7 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_7')(lkr3)
         cnv8 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_8')(cnv7)
         if target_size[0]>50:
