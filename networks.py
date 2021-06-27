@@ -193,6 +193,7 @@ def model_maker(target_size, model_id, num_classes = 3):
         cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1')(inp)
         cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2')(cnv1)
         mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+        lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(mxp1)
         size_mxp1 = getattr(mxp1, 'shape')
         image_size =size_mxp1[1]  # We'll resize input images to this size
         patch_size = 10  # Size of the patches to be extract from the input images
@@ -204,7 +205,7 @@ def model_maker(target_size, model_id, num_classes = 3):
             projection_dim]  # Size of the transformer layers
         transformer_layers = 1
         mlp_head_units = [50, 50]
-        patches = Patches(patch_size)(mxp1)
+        patches = Patches(patch_size)(lkr1)
         # Encode patches.
         encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
 
@@ -242,9 +243,11 @@ def model_maker(target_size, model_id, num_classes = 3):
         cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1')(inp)
         cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2')(cnv1)
         mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
-        cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3')(mxp1)
+        lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(mxp1)
+        cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3')(lkr1)
         cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4')(cnv3)
         mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
+        lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(mxp2)
         size_mxp2 = getattr(mxp2, 'shape')
         image_size =size_mxp2[1]  # We'll resize input images to this size
         patch_size = 5  # Size of the patches to be extract from the input images
@@ -257,7 +260,7 @@ def model_maker(target_size, model_id, num_classes = 3):
           projection_dim]  # Size of the transformer layers
         transformer_layers = 2
         mlp_head_units = [50, 50]
-        patches = Patches(patch_size)(mxp2)
+        patches = Patches(patch_size)(lkr2)
       # Encode patches.
         encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
 
