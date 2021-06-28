@@ -398,35 +398,40 @@ def model_maker(target_size, model_id, num_classes = 3):
             cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1', padding = 'same')(representation)
             cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2', padding = 'same')(cnv1)
             #mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+            lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(cnv2)
 
             cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3', padding = 'valid')(cnv2)
             cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4', padding = 'valid')(cnv3)
             #mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
-              
+            lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(cnv4)
 
-            fltn = Flatten(name = 'flatten_layer')(cnv4)
+
+            fltn = Flatten(name = 'flatten_layer')(lkr2)
         elif int(size_rep[1]**0.5)==10:
             cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1', padding = 'valid')(representation)
             cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2', padding = 'valid')(cnv1)
             #mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+            lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(cnv2)
 
             cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3', padding = 'valid')(cnv2)
             cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4', padding = 'valid')(cnv3)
             #mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
-              
+            lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(cnv4) 
 
-            fltn = Flatten(name = 'flatten_layer')(cnv4)
+            fltn = Flatten(name = 'flatten_layer')(lkr2)
         else:
             cnv1 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_1', padding = 'valid')(representation)
             cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2', padding = 'valid')(cnv1)
             mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
+            lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(mxp1)
 
             cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3', padding = 'valid')(mxp1)
             cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4', padding = 'valid')(cnv3)
             mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
-              
+            lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(mxp2) 
 
-            fltn = Flatten(name = 'flatten_layer')(mxp2)
+
+            fltn = Flatten(name = 'flatten_layer')(lkr2)
 
         FC1 = Dense(50, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
