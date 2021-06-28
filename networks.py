@@ -246,9 +246,13 @@ def model_maker(target_size, model_id, num_classes = 3):
         lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(mxp1)
         cnv3 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_3')(lkr1)
         cnv4 = Conv2D(filters = 16, kernel_size = (3, 3), strides = (1, 1), name = 'conv_4')(cnv3)
-        mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
-        lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(mxp2)
-        size_mxp2 = getattr(mxp2, 'shape')
+        if target_size[0]>50:
+            mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
+            lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(mxp2)
+        else:
+            lkr2 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(cnv4)
+        size_mxp2 = getattr(lkr2, 'shape')
+        # print('aaaa', size_mxp2)
         image_size =size_mxp2[1]  # We'll resize input images to this size
         patch_size = 5  # Size of the patches to be extract from the input images
         num_patches = (image_size // patch_size) ** 2
