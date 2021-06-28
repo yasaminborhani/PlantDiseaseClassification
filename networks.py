@@ -341,10 +341,11 @@ def model_maker(target_size, model_id, num_classes = 3):
         cnv2 = Conv2D(filters = 10, kernel_size = (3, 3), strides = (1, 1), name = 'conv_2')(cnv1)
         if int(size_rep[1]**0.5)>5:
             mxp1 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_1')(cnv2)
-
-            fltn = Flatten(name = 'flatten_layer')(mxp1)
+            lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(mxp1)
+            fltn = Flatten(name = 'flatten_layer')(lkr1)
         else:
-            fltn = Flatten(name = 'flatten_layer')(cnv2)
+            lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(cnv2)
+            fltn = Flatten(name = 'flatten_layer')(lkr1)
         FC1 = Dense(50, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
         FC2 = Dense(50, name = 'FC_2')(FC1)
