@@ -24,6 +24,8 @@ parser.add_argument('--bach_size', type = int, default = 16, help = 'batch size 
 parser.add_argument('--mode', type = str, default = 'categorical', help = 'classification mode')
 parser.add_argument('--target_size', type = int, default = 100, help ='size of the input images')
 parser.add_argument('--batch_size', type = int, default = 16, help ='batch size')
+parser.add_argument('--num_classes', type = int, default = 3, help ='no. of classes')
+parser.add_argument('--FC_units', type = int, default = 50, help ='FC units')
 
 args = parser.parse_args()
     
@@ -38,7 +40,11 @@ def main():
     clbk = CustomCallback(val_gen, args.backup_path, args.model_id)
     learning_rate = 0.001
     weight_decay = 0.0001
-    model = model_maker((args.target_size, args.target_size), args.model_id)
+    model = model_maker((args.target_size, args.target_size),
+                         args.model_id,
+                         args.num_classes,
+                         args.FC_units)
+                         
     optimizer = tfa.optimizers.AdamW(
         learning_rate=learning_rate, weight_decay=weight_decay)
 

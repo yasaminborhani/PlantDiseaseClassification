@@ -84,7 +84,7 @@ def create_vit_classifier(input_shape, patch_size, num_patches, projection_dim, 
     model = keras.Model(inputs=inputs, outputs=logits, name = model_name)
     return model
 
-def model_maker(target_size, model_id, num_classes = 3):
+def model_maker(target_size, model_id, num_classes = 3, FC_units = 50):
     """ This function creates a trainable model. 
         params:
             target_size: tuple, size of the input image to the network
@@ -104,9 +104,9 @@ def model_maker(target_size, model_id, num_classes = 3):
         mxp2 = MaxPooling2D(pool_size = (2, 2), strides= (2, 2), name = 'maxpool_2')(cnv4)
         lkr2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk2')(mxp2)
         fltn = Flatten(name = 'flatten_layer')(lkr2)
-        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = Dense(FC_units, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = Dense(FC_units, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
         output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
@@ -137,9 +137,9 @@ def model_maker(target_size, model_id, num_classes = 3):
         else:
             lkr4 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk4')(cnv8)
         fltn = Flatten(name = 'flatten_layer')(lkr4)
-        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = Dense(FC_units, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = Dense(FC_units, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
         output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
@@ -155,7 +155,7 @@ def model_maker(target_size, model_id, num_classes = 3):
             projection_dim * 2,
             projection_dim]  # Size of the transformer layers
         transformer_layers = 2
-        mlp_head_units = [50, 50]
+        mlp_head_units = [FC_units, FC_units]
         model = create_vit_classifier((*target_size, 3),
                                       patch_size,
                                       num_patches,
@@ -176,7 +176,7 @@ def model_maker(target_size, model_id, num_classes = 3):
             projection_dim * 2,
             projection_dim]  # Size of the transformer layers
         transformer_layers = 4
-        mlp_head_units = [50, 50]
+        mlp_head_units = [FC_units, FC_units]
         model = create_vit_classifier((*target_size, 3),
                                       patch_size,
                                       num_patches,
@@ -204,7 +204,7 @@ def model_maker(target_size, model_id, num_classes = 3):
             projection_dim * 2,
             projection_dim]  # Size of the transformer layers
         transformer_layers = 1
-        mlp_head_units = [50, 50]
+        mlp_head_units = [FC_units, FC_units]
         patches = Patches(patch_size)(lkr1)
         # Encode patches.
         encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
@@ -230,9 +230,9 @@ def model_maker(target_size, model_id, num_classes = 3):
         representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
 
         fltn = Flatten(name = 'flatten_layer')(representation)
-        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = Dense(FC_units, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = Dense(FC_units, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
         output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN_'+str(model_id))
@@ -263,7 +263,7 @@ def model_maker(target_size, model_id, num_classes = 3):
           projection_dim * 2,
           projection_dim]  # Size of the transformer layers
         transformer_layers = 2
-        mlp_head_units = [50, 50]
+        mlp_head_units = [FC_units, FC_units]
         patches = Patches(patch_size)(lkr2)
       # Encode patches.
         encoded_patches = PatchEncoder(num_patches, projection_dim)(patches)
@@ -289,9 +289,9 @@ def model_maker(target_size, model_id, num_classes = 3):
         representation = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
 
         fltn = Flatten(name = 'flatten_layer')(representation)
-        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = Dense(FC_units, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = Dense(FC_units, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
         output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inp, outputs = output, name = 'WheatClassifier_CNN-VIT_'+str(model_id))
@@ -307,7 +307,7 @@ def model_maker(target_size, model_id, num_classes = 3):
           projection_dim * 2,
           projection_dim]  # Size of the transformer layers
         transformer_layers = 1
-        mlp_head_units = [50, 50]
+        mlp_head_units = [FC_units, FC_units]
         inputs = layers.Input(shape = (*target_size, 3), name = 'input_layer')
       # Create patches.
         patches = Patches(patch_size)(inputs)
@@ -346,9 +346,9 @@ def model_maker(target_size, model_id, num_classes = 3):
         else:
             lkr1 = tf.keras.layers.LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_cnvblk1')(cnv2)
             fltn = Flatten(name = 'flatten_layer')(lkr1)
-        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = Dense(FC_units, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = Dense(FC_units, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
         output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inputs, outputs = output, name = 'WheatClassifier_CNN_'+str(1))
@@ -364,7 +364,7 @@ def model_maker(target_size, model_id, num_classes = 3):
           projection_dim * 2,
           projection_dim]  # Size of the transformer layers
         transformer_layers = 2
-        mlp_head_units = [50, 50]
+        mlp_head_units = [FC_units, FC_units]
         inputs = layers.Input(shape = (*target_size, 3), name = 'input_layer')
       # Create patches.
         patches = Patches(patch_size)(inputs)
@@ -433,9 +433,9 @@ def model_maker(target_size, model_id, num_classes = 3):
 
             fltn = Flatten(name = 'flatten_layer')(lkr2)
 
-        FC1 = Dense(50, name = 'FC_1')(fltn)
+        FC1 = Dense(FC_units, name = 'FC_1')(fltn)
         FC1 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_1')(FC1)
-        FC2 = Dense(50, name = 'FC_2')(FC1)
+        FC2 = Dense(FC_units, name = 'FC_2')(FC1)
         FC2 = LeakyReLU(alpha = 0.3, name = 'leaky_ReLu_2')(FC2)
         output = Dense(num_classes, activation = 'softmax', name = 'output_layer')(FC2)
         model = Model(inputs = inputs, outputs = output, name = 'WheatClassifier_CNN_'+str(1))
