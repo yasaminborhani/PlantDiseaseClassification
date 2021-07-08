@@ -68,7 +68,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
         y_pred = np.squeeze(np.argmax(y_pred, axis = 1))
         y_true = self.val_gen.classes
         cnf = confusion_matrix(y_true, y_pred)
-        cls_report = classification_report(y_true, y_pred)
+        cls_report = classification_report(y_true, y_pred, digits=4)
         print('\nclassification report:\n', cls_report)
         print('\nconfusion matrix:\n', cnf)
         with open('/content/temp.pkl', 'rb') as f:
