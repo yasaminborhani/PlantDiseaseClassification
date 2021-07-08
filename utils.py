@@ -74,7 +74,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
         with open('/content/temp.pkl', 'rb') as f:
             dict = pkl.load(f)
         with open('/content/temp.pkl', 'wb') as f:
-            cls_report = classification_report(y_true, y_pred, output_dict=True)
+            cls_report = classification_report(y_true, y_pred, digits=4, output_dict=True)
             dict[epoch] = {'cls_report':cls_report, 'logs':logs}
             pkl.dump(dict, f)
         
