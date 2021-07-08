@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import pickle as pkl
+import os
 
 def gen_maker(train_path, val_path, target_size=(100, 100), batch_size=16, mode='categorical'):
     """
@@ -56,9 +57,10 @@ class CustomCallback(tf.keras.callbacks.Callback):
         self.val_gen = val_gen
         self.model_path = model_path
         self.model_id = model_id
-        with open('temp.pkl', 'wb') as f:
-            dict = {}
-            pkl.dump(dict, f)
+        if not os.path.exists('/content/temp.pkl'):
+            with open('/content/temp.pkl', 'wb') as f:
+                dict = {}
+                pkl.dump(dict, f)
     def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1)%5 == 0 or (epoch+1)>=85:
             self.model.save(self.model_path + 'epoch{}-id{}'.format(epoch,self.model_id ))
@@ -69,9 +71,9 @@ class CustomCallback(tf.keras.callbacks.Callback):
         cls_report = classification_report(y_true, y_pred)
         print('\nclassification report:\n', cls_report)
         print('\nconfusion matrix:\n', cnf)
-        with open('temp.pkl', 'rb') as f:
+        with open('/content/temp.pkl', 'rb') as f:
             dict = pkl.load(f)
-        with open('temp.pkl', 'wb') as f:
+        with open('/content/temp.pkl', 'wb') as f:
             cls_report = classification_report(y_true, y_pred, output_dict=True)
             dict[epoch] = {'cls_report':cls_report, 'logs':logs}
             pkl.dump(dict, f)
