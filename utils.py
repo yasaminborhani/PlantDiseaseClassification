@@ -64,8 +64,10 @@ class CustomCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1)%5 == 0 or (epoch+1)>=85:
             self.model.save(self.model_path + 'epoch{}-id{}'.format(epoch,self.model_id ))
+            self.model.save_weights(self._model_path + 'modelWeights')
             os.system('git add ' + self.model_path + 'epoch{}-id{}'.format(epoch,self.model_id ))
             os.system('git rm -r ' + self.model_path + 'epoch{}-id{}'.format(epoch-5,self.model_id ))
+            os.system('git add ' + self.model_path)
             os.system('cp temp.pkl ' + self.model_path + 'temp.pkl')
             os.system('git add ' + self.model_path + 'temp.pkl')
             os.system('git commit -m "model has been trained"')
