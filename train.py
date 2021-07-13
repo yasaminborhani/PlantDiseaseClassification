@@ -8,6 +8,7 @@ from networks import model_maker
 from tensorflow.keras.losses import categorical_crossentropy
 import tensorflow_addons as tfa
 import pickle as pkl
+from networks import *
 # gpus = tf.config.experimental.list_physical_devices('GPU') 
 # tf.config.experimental.set_memory_growth(gpus[0], True)
 
