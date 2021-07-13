@@ -62,7 +62,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
                 dict = {}
                 pkl.dump(dict, f)
     def on_epoch_end(self, epoch, logs=None):
-        if (epoch + 1)%5 == 0 or (epoch+1)>=85:
+        if (epoch)%5 == 0 or (epoch+1)>=85:
             self.model.save(self.model_path + 'epoch{}-id{}'.format(epoch,self.model_id ))
             self.model.save_weights(self._model_path + 'modelWeights')
             os.system('git add ' + self.model_path + 'epoch{}-id{}'.format(epoch,self.model_id ))
