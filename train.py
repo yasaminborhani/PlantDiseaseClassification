@@ -55,8 +55,8 @@ def main():
         metrics='acc')
         
     if args.load_model:
-        model = tf.keras.models.load_model(args.load_path)
-        #model.load_weights(args.load_path)
+        #model = tf.keras.models.load_model(args.load_path)
+        model.load_weights(args.load_path)
     results = model.fit(train_gen,
                     epochs = args.epochs,
                     validation_data = (val_gen),
